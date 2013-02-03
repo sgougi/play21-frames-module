@@ -9,7 +9,7 @@ Frames Plugins
 ======
 
 * [Frames-Titan Plugin](https://github.com/sgougi/play21-frames-titan-plugin)
-* Frames-Neo4j : coming soon.
+* Frames-Neo4j Plugin: coming soon.
 
 Requirements
 =========
