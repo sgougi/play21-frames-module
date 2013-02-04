@@ -34,9 +34,9 @@ import play.Plugin;
 public abstract class PluginBase extends Plugin {
 
 	final protected Application application;
-	final protected static Set<AnnotationHandler<? extends Annotation>> annotationHandlers = new HashSet<AnnotationHandler<? extends Annotation>>();
+	final protected static Set<AnnotationHandler<? extends Annotation>> ANNOTATION_HANDLERS = new HashSet<AnnotationHandler<? extends Annotation>>();
 
-	protected static FramedGraphDirector<? extends FramedGraph<? extends Graph>> framedGraphDirector;
+	protected static FramedGraphDirector<? extends FramedGraph<? extends Graph>> FRAMED_GRAPH_DIRECTOR;
 	
 	//
 
@@ -47,28 +47,20 @@ public abstract class PluginBase extends Plugin {
 	@Override
 	final public void onStart() {
 		onBeingStart();
-		if ( framedGraphDirector == null )
-			framedGraphDirector = createFramedGraphDirector();
+		if ( FRAMED_GRAPH_DIRECTOR == null )
+			FRAMED_GRAPH_DIRECTOR = createFramedGraphDirector();
 		registerAnnotations();
 		GraphDB.setRawGraphDB(new RawGraphDB(){
 			@Override
 			public <T extends FramedGraph<? extends Graph>> FramedGraphDirector<T> getFramedGraphDirector() {
-				return (FramedGraphDirector<T>)PluginBase.framedGraphDirector;
+				return (FramedGraphDirector<T>)PluginBase.FRAMED_GRAPH_DIRECTOR;
 			}
 			@Override
 			public Set<AnnotationHandler<? extends Annotation>> getAnnotationHandlers() {
-				return (Set<AnnotationHandler<? extends Annotation>>)annotationHandlers;
+				return (Set<AnnotationHandler<? extends Annotation>>)ANNOTATION_HANDLERS;
 			}});
 		onEndStart();		
 	}
-	
-	public static FramedGraphDirector<? extends FramedGraph<? extends Graph>> getFramedGraphDirector() {
-		return framedGraphDirector;
-	}
-
-	public static Set<AnnotationHandler<? extends Annotation>> getAnnotationHandlers() {
-		return annotationHandlers;
-	}	
 	
 	protected abstract <T extends FramedGraph<? extends Graph>> FramedGraphDirector<T> createFramedGraphDirector();
 
@@ -82,7 +74,8 @@ public abstract class PluginBase extends Plugin {
 	}	
 	
 	protected void registerAnnotations() {
-		onRegisterAnnotations(annotationHandlers);
+		ANNOTATION_HANDLERS.clear();
+		onRegisterAnnotations(ANNOTATION_HANDLERS);
 		@SuppressWarnings("rawtypes")
 		final Set<Class<AnnotationHandler>> handlerClasses = TypeUtils.getSubTypesOf(application, "handlers", AnnotationHandler.class);
 
@@ -95,16 +88,16 @@ public abstract class PluginBase extends Plugin {
 					@SuppressWarnings("unchecked")
 					final AnnotationHandler<? extends Annotation> whandler = (AnnotationHandler<? extends Annotation>) javaClass.newInstance();
 					handler = whandler;
-					annotationHandlers.add(handler);
+					ANNOTATION_HANDLERS.add(handler);
 				} catch ( Exception e ) {
 					FramesLogger.error(e, e.getMessage());
 				}
 			}
 		}
-		annotationHandlers.add(new IdAnnotationHandler());
-		annotationHandlers.add(new IndexPropertyAnnotationHandler());
-		annotationHandlers.add(new GremlinGroovyExAnnotationHandler());
-		annotationHandlers.add(new DatePropertyAnnotationHandler());
+		ANNOTATION_HANDLERS.add(new IdAnnotationHandler());
+		ANNOTATION_HANDLERS.add(new IndexPropertyAnnotationHandler());
+		ANNOTATION_HANDLERS.add(new GremlinGroovyExAnnotationHandler());
+		ANNOTATION_HANDLERS.add(new DatePropertyAnnotationHandler());
 	}	
 	
 }
