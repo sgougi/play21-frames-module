@@ -1,4 +1,4 @@
-What is Frames Module ?
+What is TinkerPop Frames Module ?
 ============
 
 **TinkerPop Frames Module** is the base module for various "Frames Plugins".
