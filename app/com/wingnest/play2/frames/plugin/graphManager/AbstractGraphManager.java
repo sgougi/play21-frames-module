@@ -15,22 +15,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wingnest.play2.frames.plugin.framedgraph;
+package com.wingnest.play2.frames.plugin.graphManager;
 
-import com.tinkerpop.blueprints.Graph;
-import com.tinkerpop.frames.FramedGraph;
-import com.wingnest.play2.frames.plugin.graphManager.GraphManager;
+import com.tinkerpop.blueprints.TransactionalGraph.Conclusion;
 
-public interface FramedGraphDirector<T extends FramedGraph<? extends Graph>> {
+public abstract class AbstractGraphManager implements GraphManager {
 
-	T createFramedGraph();
+	@Override
+	public void startTransaction() {
+	}
 
-	GraphManager getGraphManager();
+	@Override
+	public void stopTransaction(Conclusion conclusion) {
+	}
 
-	void onShutdown();
+	@Override
+	public void onShutdown() {
+	}
 
-	void onRestart();
-	
-	void onStop();
-	
+	@Override
+	public void onRestart() {
+	}
+
+	@Override
+	public void onStop() {
+	}
+
 }

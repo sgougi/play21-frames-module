@@ -32,7 +32,7 @@ import play.Application;
 import play.Plugin;
 
 public abstract class PluginBase extends Plugin {
-
+	
 	final protected Application application;
 	final protected static Set<AnnotationHandler<? extends Annotation>> ANNOTATION_HANDLERS = new HashSet<AnnotationHandler<? extends Annotation>>();
 
@@ -42,6 +42,12 @@ public abstract class PluginBase extends Plugin {
 
 	public PluginBase(final Application application) {
 		this.application = application;
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			public void run() {
+				if(FRAMED_GRAPH_DIRECTOR != null)
+					FRAMED_GRAPH_DIRECTOR.onShutdown();
+			}
+		});			
 	}
 
 	@Override
@@ -49,6 +55,9 @@ public abstract class PluginBase extends Plugin {
 		onBeingStart();
 		if ( FRAMED_GRAPH_DIRECTOR == null )
 			FRAMED_GRAPH_DIRECTOR = createFramedGraphDirector();
+		else
+			FRAMED_GRAPH_DIRECTOR.onRestart();
+		
 		registerAnnotations();
 		GraphDB.setRawGraphDB(new RawGraphDB(){
 			@Override
@@ -60,6 +69,12 @@ public abstract class PluginBase extends Plugin {
 				return (Set<AnnotationHandler<? extends Annotation>>)ANNOTATION_HANDLERS;
 			}});
 		onEndStart();		
+	}
+	
+	@Override
+	final public void onStop() {
+		if(FRAMED_GRAPH_DIRECTOR != null)
+			FRAMED_GRAPH_DIRECTOR.onStop();		
 	}
 	
 	protected abstract <T extends FramedGraph<? extends Graph>> FramedGraphDirector<T> createFramedGraphDirector();
@@ -98,6 +113,6 @@ public abstract class PluginBase extends Plugin {
 		ANNOTATION_HANDLERS.add(new IndexPropertyAnnotationHandler());
 		ANNOTATION_HANDLERS.add(new GremlinGroovyExAnnotationHandler());
 		ANNOTATION_HANDLERS.add(new DatePropertyAnnotationHandler());
-	}	
+	}
 	
 }

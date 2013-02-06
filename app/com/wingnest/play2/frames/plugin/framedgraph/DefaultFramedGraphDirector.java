@@ -39,4 +39,19 @@ public class DefaultFramedGraphDirector implements FramedGraphDirector<FramedGra
 		return manager;
 	}
 
+	@Override
+	public void onShutdown() {
+		if(manager != null) manager.onShutdown();
+	}
+
+	@Override
+	public void onRestart() {
+		if(manager != null) manager.onRestart();
+	}
+	
+	@Override
+	public void onStop() {
+		if(manager != null) manager.onStop();
+	}	
+	
 }

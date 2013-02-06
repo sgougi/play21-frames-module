@@ -28,4 +28,10 @@ public interface GraphManager {
 
 	void stopTransaction(Conclusion conclusion);
 
+	void onShutdown();
+	
+	void onRestart();
+	
+	void onStop();
+
 }
