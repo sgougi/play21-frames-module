@@ -3,8 +3,6 @@ What is Frames Module ?
 
 **Frames Module** is the base module for various "Frames Plugins".
 
-* For Play2.0.4 is [here](https://github.com/sgougi/play20-frames-module).
-
 Frames Plugins
 ======
 
@@ -15,7 +13,7 @@ Requirements
 =========
 
 * Java 5 or 6
-* Play2.1-RC4
+* Play2.1.0
 
 Known Issues
 =============
