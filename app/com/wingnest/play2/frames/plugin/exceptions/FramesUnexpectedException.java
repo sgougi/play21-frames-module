@@ -1,7 +1,5 @@
 /*
- * Copyright since 2013 Shigeru GOUGI
- *                              e-mail:  sgougi@gmail.com
- *                              twitter: @igerugo
+ * Copyright since 2013 Shigeru GOUGI (sgougi@gmail.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +15,9 @@
  */
 package com.wingnest.play2.frames.plugin.exceptions;
 
-//import play.UnexpectedException;
-//import scala.Option;
-
-//public class FramesUnexpectedException extends UnexpectedException {
 public class FramesUnexpectedException extends RuntimeException {
 
 	public FramesUnexpectedException(final Exception e) {
-//		super(Option.apply(e.getMessage()), Option.apply(e.getCause()));
 		super(e);
 	}
 
