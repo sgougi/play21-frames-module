@@ -6,9 +6,9 @@ What is TinkerPop Frames Module ?
 Frames Plugins
 ======
 
-* [Frames-Neo4j Plugin](https://github.com/sgougi/play21-frames-neo4j-plugin)
-* [Frames-OrientDB Plugin](https://github.com/sgougi/play21-frames-orientdb-plugin)
-* [Frames-Titan Plugin](https://github.com/sgougi/play21-frames-titan-plugin)
+* [Frames-Neo4j Plugin](http://goo.gl/912K1)
+* [Frames-OrientDB Plugin](http://goo.gl/4zvvI)
+* [Frames-Titan Plugin](http://goo.gl/qxQll)
 
 Requirements
 =========
