@@ -52,6 +52,10 @@ final public class GraphDB {
 		getGraphManager().stopTransaction(Conclusion.FAILURE);
 	}	
 
+	public static void shutdown() {
+		getGraphManager().onShutdown();
+	}
+	
 	public static <T extends Graph> T getGraph() {
 		return (T)getRawGraphDB().getFramedGraphDirector().getGraphManager().getGraph();
 	}

@@ -27,6 +27,7 @@ import com.wingnest.play2.frames.plugin.framedgraph.FramedGraphDirector;
 import com.wingnest.play2.frames.plugin.utils.TypeUtils;
 import com.tinkerpop.frames.annotations.AnnotationHandler;
 import play.Application;
+import play.Play;
 import play.Plugin;
 
 public abstract class PluginBase extends Plugin {
@@ -39,22 +40,27 @@ public abstract class PluginBase extends Plugin {
 	//
 
 	public PluginBase(final Application application) {
-		this.application = application;
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			public void run() {
-				if(FRAMED_GRAPH_DIRECTOR != null)
-					FRAMED_GRAPH_DIRECTOR.onShutdown();
-			}
-		});			
+		this.application = application;		
 	}
 
 	@Override
 	final public void onStart() {
 		onBeingStart();
-		if ( FRAMED_GRAPH_DIRECTOR == null )
+		if ( FRAMED_GRAPH_DIRECTOR == null ) {
 			FRAMED_GRAPH_DIRECTOR = createFramedGraphDirector();
-		else
+			FramesLogger.info("add shutdown hook");
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				public void run() {
+					if(FRAMED_GRAPH_DIRECTOR != null) {
+						FramesLogger.info("shutdown hook was called");						
+						System.out.println("[FramesPlugin:system out] shutdown hook was called");
+						FRAMED_GRAPH_DIRECTOR.onShutdown();
+					}
+				}
+			});			
+		} else {
 			FRAMED_GRAPH_DIRECTOR.onRestart();
+		}
 		
 		registerAnnotations();
 		GraphDB.setRawGraphDB(new RawGraphDB(){
@@ -89,21 +95,22 @@ public abstract class PluginBase extends Plugin {
 	protected void registerAnnotations() {
 		ANNOTATION_HANDLERS.clear();
 		onRegisterAnnotations(ANNOTATION_HANDLERS);
-		@SuppressWarnings("rawtypes")
-		final Set<Class<AnnotationHandler>> handlerClasses = TypeUtils.getSubTypesOf(application, "handlers", AnnotationHandler.class);
-
-		for ( @SuppressWarnings("rawtypes")
-		final Class<AnnotationHandler> javaClass : handlerClasses ) {
-			if ( AnnotationHandler.class.isAssignableFrom(javaClass) ) {
-				FramesLogger.info("register AnnotationHandler: %s", javaClass.getName());
-				final AnnotationHandler<? extends Annotation> handler;
-				try {
-					@SuppressWarnings("unchecked")
-					final AnnotationHandler<? extends Annotation> whandler = (AnnotationHandler<? extends Annotation>) javaClass.newInstance();
-					handler = whandler;
-					ANNOTATION_HANDLERS.add(handler);
-				} catch ( Exception e ) {
-					FramesLogger.error(e, e.getMessage());
+		if(isEnableRegisterAnnotationHandlers()) {
+			@SuppressWarnings("rawtypes")			
+			final Set<Class<AnnotationHandler>> handlerClasses = TypeUtils.getSubTypesOf(application, "handlers", AnnotationHandler.class);
+			for ( @SuppressWarnings("rawtypes")
+			final Class<AnnotationHandler> javaClass : handlerClasses ) {
+				if ( AnnotationHandler.class.isAssignableFrom(javaClass) ) {
+					FramesLogger.info("register AnnotationHandler: %s", javaClass.getName());
+					final AnnotationHandler<? extends Annotation> handler;
+					try {
+						@SuppressWarnings("unchecked")
+						final AnnotationHandler<? extends Annotation> whandler = (AnnotationHandler<? extends Annotation>) javaClass.newInstance();
+						handler = whandler;
+						ANNOTATION_HANDLERS.add(handler);
+					} catch ( Exception e ) {
+						FramesLogger.error(e, e.getMessage());
+					}
 				}
 			}
 		}
@@ -111,6 +118,10 @@ public abstract class PluginBase extends Plugin {
 		ANNOTATION_HANDLERS.add(new IndexPropertyAnnotationHandler());
 		ANNOTATION_HANDLERS.add(new GremlinGroovyExAnnotationHandler());
 		ANNOTATION_HANDLERS.add(new DatePropertyAnnotationHandler());
+	}
+	
+	public static boolean isEnableRegisterAnnotationHandlers() {
+		return Play.application().configuration().getBoolean("frames.enable.register.annotation.handlers", false);
 	}
 	
 }
