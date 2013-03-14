@@ -2,6 +2,7 @@ import sbt._
 import Keys._
 import play.Project._
 
+
 object ApplicationBuild extends Build {
 
 	val appName         = "play21-frames-module"
@@ -16,7 +17,8 @@ object ApplicationBuild extends Build {
 	    javaCore
 	)
 
-	val main = play.Project(appName, appVersion, appDependencies).settings(	
+	val main = play.Project(appName, appVersion, appDependencies).settings(
+	    publishArtifact in(Compile, packageDoc) := false,
 	    organization := "com.wingnest.play2",
 	    resolvers += "Oracle Releases" at "http://download.oracle.com/maven/"
 	)
