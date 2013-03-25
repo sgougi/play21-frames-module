@@ -15,7 +15,14 @@ Requirements
 
 * Java 5 or 6, 7
 * Play 2.1.0
+* 
 
+Dependencies
+=========
+
+* TinkerPop Blueprints 2.2.0
+* TinkerPop Frames 2.2.0
+ 
 Known Issues
 =============
 * nothing
