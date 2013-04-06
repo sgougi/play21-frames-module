@@ -17,12 +17,12 @@ package com.wingnest.play2.frames.plugin.actions;
 
 import java.lang.annotation.Annotation;
 
-import com.tinkerpop.blueprints.TransactionalGraph.Conclusion;
-import com.wingnest.play2.frames.GraphDB;
-
 import play.mvc.Action;
 import play.mvc.Http;
 import play.mvc.Result;
+
+import com.tinkerpop.blueprints.TransactionalGraph.Conclusion;
+import com.wingnest.play2.frames.GraphDB;
 
 final public class GraphDBAction extends Action<Annotation> {
 

@@ -20,33 +20,26 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-
 import com.tinkerpop.blueprints.Direction;
-import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Element;
-import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.frames.ClassUtilities;
 import com.tinkerpop.frames.FramedGraph;
 import com.tinkerpop.frames.annotations.AnnotationHandler;
-import com.wingnest.play2.frames.annotations.*;
+import com.wingnest.play2.frames.annotations.DateProperty;
 
 public class DatePropertyAnnotationHandler implements AnnotationHandler<DateProperty> {
+
+	@Override
+	public Object processElement(final DateProperty annotation, final Method method, final Object[] arguments, final FramedGraph framedGraph, final Element element, final Direction direction) {
+		return process(annotation, method, arguments, element);		 
+	}
+
 
 	@Override
 	public Class<DateProperty> getAnnotationType() {
 		return DateProperty.class;
 	}
-
-	@Override
-	public Object processVertex(final DateProperty annotation, final Method method, final Object[] arguments, final FramedGraph framedGraph, final Vertex element) {
-		return process(annotation, method, arguments, element);
-	}
-
-	@Override
-	public Object processEdge(final DateProperty annotation, final Method method, final Object[] arguments, final FramedGraph framedGraph, final Edge element, final Direction direction) {
-		return process(annotation, method, arguments, element);
-	}
-
+	
 	private <T extends Element> Object process(final DateProperty annotation, final Method method, final Object[] arguments, final T element) {
 		if ( ClassUtilities.isGetMethod(method) ) {
 			return toDate(annotation, element.getProperty(annotation.value()));

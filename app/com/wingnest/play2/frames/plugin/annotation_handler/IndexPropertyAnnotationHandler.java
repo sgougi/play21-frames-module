@@ -27,7 +27,6 @@ import com.tinkerpop.frames.FramedGraph;
 import com.tinkerpop.frames.annotations.AnnotationHandler;
 import com.wingnest.play2.frames.GraphDB;
 import com.wingnest.play2.frames.annotations.IndexedProperty;
-import com.wingnest.play2.frames.plugin.FramesLogger;
 
 public class IndexPropertyAnnotationHandler implements AnnotationHandler<IndexedProperty> {
 
@@ -35,14 +34,21 @@ public class IndexPropertyAnnotationHandler implements AnnotationHandler<Indexed
 	public Class<IndexedProperty> getAnnotationType() {
 		return IndexedProperty.class;
 	}
-
+	
 	@Override
-	public Object processVertex(final IndexedProperty annotation, final Method method, final Object[] arguments, final FramedGraph framedGraph, final Vertex element) {
+	public Object processElement(final IndexedProperty annotation, final Method method, final Object[] arguments, final FramedGraph framedGraph, final Element element, final Direction direction) {
+		if( element instanceof Vertex ) {
+			return processVertex( annotation, method, arguments, framedGraph, (Vertex)element);
+		} else {
+			return processEdge( annotation, method, arguments, framedGraph, (Edge)element, direction);
+		}
+	}	
+
+	private Object processVertex(final IndexedProperty annotation, final Method method, final Object[] arguments, final FramedGraph framedGraph, final Vertex element) {
 		return process(annotation, method, arguments, element);
 	}
 
-	@Override
-	public Object processEdge(final IndexedProperty annotation, final Method method, final Object[] arguments, final FramedGraph framedGraph, final Edge element, final Direction direction) {
+	private Object processEdge(final IndexedProperty annotation, final Method method, final Object[] arguments, final FramedGraph framedGraph, final Edge element, final Direction direction) {
 		return process(annotation, method, arguments, element);
 	}
 

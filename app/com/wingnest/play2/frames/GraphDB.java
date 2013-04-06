@@ -24,7 +24,6 @@ import com.tinkerpop.blueprints.Index;
 import com.tinkerpop.blueprints.IndexableGraph;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Parameter;
-import com.tinkerpop.blueprints.TransactionalGraph.Conclusion;
 import com.tinkerpop.frames.FramedGraph;
 import com.tinkerpop.frames.annotations.AnnotationHandler;
 import com.wingnest.play2.frames.plugin.FramesLogger;
@@ -45,11 +44,11 @@ final public class GraphDB {
 	}	
 	
 	public static void commit() {
-		getGraphManager().stopTransaction(Conclusion.SUCCESS);
+		getGraphManager().commit();
 	}
 	
 	public static void rollback() {
-		getGraphManager().stopTransaction(Conclusion.FAILURE);
+		getGraphManager().rollback();
 	}	
 
 	public static void shutdown() {

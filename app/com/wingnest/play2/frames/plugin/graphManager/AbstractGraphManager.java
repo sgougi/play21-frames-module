@@ -25,7 +25,15 @@ public abstract class AbstractGraphManager implements GraphManager {
 
 	@Override
 	public void stopTransaction(Conclusion conclusion) {
+	}	
+	
+	@Override
+	public void commit() {
 	}
+
+	@Override
+	public void rollback() {
+	}	
 
 	@Override
 	public void onShutdown() {

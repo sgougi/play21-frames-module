@@ -22,9 +22,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.wingnest.play2.frames.plugin.actions.GraphDBAction;
-
 import play.mvc.With;
+
+import com.wingnest.play2.frames.plugin.actions.GraphDBAction;
 
 @With(GraphDBAction.class)
 @Target({ ElementType.METHOD, ElementType.TYPE })

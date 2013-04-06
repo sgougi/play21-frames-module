@@ -22,9 +22,15 @@ public interface GraphManager {
 
 	<T extends Graph> T getGraph();
 
+	@Deprecated	
 	void startTransaction();
 
+	@Deprecated
 	void stopTransaction(Conclusion conclusion);
+	
+	void commit();
+
+	void rollback();	
 
 	void onShutdown();
 	

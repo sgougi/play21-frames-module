@@ -23,8 +23,8 @@ import com.tinkerpop.blueprints.Element;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.frames.ClassUtilities;
 import com.tinkerpop.frames.FramedGraph;
-import com.tinkerpop.frames.FramedVertexIterable;
 import com.tinkerpop.frames.annotations.AnnotationHandler;
+import com.tinkerpop.frames.structures.FramedVertexIterable;
 import com.tinkerpop.gremlin.groovy.Gremlin;
 import com.tinkerpop.pipes.Pipe;
 import com.tinkerpop.pipes.util.iterators.SingleIterator;
@@ -33,12 +33,20 @@ import com.wingnest.play2.frames.annotations.GremlinGroovyEx;
 public class GremlinGroovyExAnnotationHandler implements AnnotationHandler<GremlinGroovyEx> {
 
 	@Override
+	public Object processElement(final GremlinGroovyEx annotation, final Method method, final Object[] arguments, final FramedGraph framedGraph, final Element element, final Direction direction) {
+		if( element instanceof Vertex) {
+			return processVertex(annotation, method, arguments, framedGraph, (Vertex)element);
+		} else {
+			return processEdge(annotation, method, arguments, framedGraph, (Edge)element, direction);
+		}
+	}
+	
+	@Override
 	public Class<GremlinGroovyEx> getAnnotationType() {
 		return GremlinGroovyEx.class;
 	}
 
-	@Override
-	public Object processVertex(final GremlinGroovyEx annotation, final Method method, final Object[] arguments, final FramedGraph framedGraph, final Vertex vertex) {
+	private Object processVertex(final GremlinGroovyEx annotation, final Method method, final Object[] arguments, final FramedGraph framedGraph, final Vertex vertex) {
 
 		if ( ClassUtilities.isGetMethod(method) ) {
 			final Pipe pipe = Gremlin.compile(annotation.value());
@@ -56,8 +64,7 @@ public class GremlinGroovyExAnnotationHandler implements AnnotationHandler<Greml
 
 	}
 
-	@Override
-	public Object processEdge(final GremlinGroovyEx annotation, final Method method, final Object[] arguments, final FramedGraph framedGraph, final Edge edge, final Direction direction) {
+	private Object processEdge(final GremlinGroovyEx annotation, final Method method, final Object[] arguments, final FramedGraph framedGraph, final Edge edge, final Direction direction) {
 		throw new UnsupportedOperationException("This method only works for vertices");
 	}
 }
