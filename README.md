@@ -20,7 +20,7 @@ Dependencies
 =========
 
 * TinkerPop Blueprints 2.3.0
-* TinkerPop Frames 2.3.0
+* TinkerPop Frames 2.3.1
  
 Known Issues
 =============
