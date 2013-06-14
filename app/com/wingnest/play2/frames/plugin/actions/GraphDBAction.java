@@ -52,11 +52,11 @@ final public class GraphDBAction extends Action<Annotation> {
 	}
 
 	private void onInvocationSuccess() {
-		GraphDB.getGraphManager().stopTransaction(Conclusion.SUCCESS);
+		GraphDB.getGraphManager().commit();
 	}
 
 	private void onInvocationException(Exception e) {
-		GraphDB.getGraphManager().stopTransaction(Conclusion.FAILURE);
+		GraphDB.getGraphManager().rollback();
 	}
 
 }

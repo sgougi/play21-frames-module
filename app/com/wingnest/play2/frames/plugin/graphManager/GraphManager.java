@@ -22,7 +22,6 @@ public interface GraphManager {
 
 	<T extends Graph> T getGraph();
 
-	@Deprecated	
 	void startTransaction();
 
 	@Deprecated
