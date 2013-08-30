@@ -49,7 +49,7 @@ public abstract class PluginBase extends Plugin {
 
 	@Override
 	final public void onStart() {
-		onBeingStart();
+		onBeginStart();
 		if ( FRAMED_GRAPH_DIRECTOR == null ) {
 			FRAMED_GRAPH_DIRECTOR = createFramedGraphDirector();
 			FramesLogger.info("add shutdown hook");
@@ -90,7 +90,7 @@ public abstract class PluginBase extends Plugin {
 	protected void onRegisterAnnotations(final Set<AnnotationHandler<? extends Annotation>> annotationHandlers) {
 	}
 	
-	protected void onBeingStart() {
+	protected void onBeginStart() {
 	}
 	
 	protected void onEndStart() {
