@@ -19,6 +19,7 @@ import java.lang.annotation.Annotation;
 import java.util.Set;
 
 import com.tinkerpop.blueprints.Graph;
+import com.tinkerpop.frames.FrameInitializer;
 import com.tinkerpop.frames.FramedGraph;
 import com.tinkerpop.frames.annotations.AnnotationHandler;
 import com.wingnest.play2.frames.plugin.framedgraph.FramedGraphDirector;
@@ -28,5 +29,7 @@ public interface RawGraphDB {
 	<T extends FramedGraph<? extends Graph>> FramedGraphDirector<T> getFramedGraphDirector();
 
 	Set<AnnotationHandler<? extends Annotation>> getAnnotationHandlers();
+
+	Set<FrameInitializer> getFrameInitializers();
 	
 }
