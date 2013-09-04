@@ -24,7 +24,9 @@ import play.Play;
 import play.Plugin;
 
 import com.tinkerpop.blueprints.Graph;
+import com.tinkerpop.frames.FrameInitializer;
 import com.tinkerpop.frames.FramedGraph;
+
 import com.tinkerpop.frames.annotations.AnnotationHandler;
 import com.wingnest.play2.frames.GraphDB;
 import com.wingnest.play2.frames.plugin.annotation_handler.DatePropertyAnnotationHandler;
@@ -38,6 +40,7 @@ public abstract class PluginBase extends Plugin {
 	
 	final protected Application application;
 	final protected static Set<AnnotationHandler<? extends Annotation>> ANNOTATION_HANDLERS = new HashSet<AnnotationHandler<? extends Annotation>>();
+	final protected static Set<FrameInitializer> FRAME_INITIALIZERS = new HashSet<FrameInitializer>();
 
 	protected static FramedGraphDirector<? extends FramedGraph<? extends Graph>> FRAMED_GRAPH_DIRECTOR;
 	
@@ -67,6 +70,7 @@ public abstract class PluginBase extends Plugin {
 		}
 		
 		registerAnnotations();
+		registerInitializers();		
 		GraphDB.setRawGraphDB(new RawGraphDB(){
 			@Override
 			public <T extends FramedGraph<? extends Graph>> FramedGraphDirector<T> getFramedGraphDirector() {
@@ -75,7 +79,12 @@ public abstract class PluginBase extends Plugin {
 			@Override
 			public Set<AnnotationHandler<? extends Annotation>> getAnnotationHandlers() {
 				return (Set<AnnotationHandler<? extends Annotation>>)ANNOTATION_HANDLERS;
-			}});
+			}
+			@Override
+			public Set<FrameInitializer> getFrameInitializers() {
+				return FRAME_INITIALIZERS;
+			}			
+		});
 		onEndStart();		
 	}
 	
@@ -124,8 +133,37 @@ public abstract class PluginBase extends Plugin {
 		ANNOTATION_HANDLERS.add(new DatePropertyAnnotationHandler());
 	}
 	
+	protected void registerInitializers() {
+		FRAME_INITIALIZERS.clear();
+		onRegisterInitializers(FRAME_INITIALIZERS);
+		if(isEnableRegisterFrameInitializers()) {
+			@SuppressWarnings("rawtypes")			
+			final Set<Class<FrameInitializer>> initializerClasses = TypeUtils.getSubTypesOf(application, "initializers", FrameInitializer.class);
+			for ( @SuppressWarnings("rawtypes")
+			final Class<FrameInitializer> javaClass : initializerClasses ) {
+				if ( FrameInitializer.class.isAssignableFrom(javaClass) ) {
+					FramesLogger.info("register FrameInitializer: %s", javaClass.getName());
+					final FrameInitializer initializer;
+					try {
+						@SuppressWarnings("unchecked")
+						final FrameInitializer winitializer = (FrameInitializer) javaClass.newInstance();
+						initializer = winitializer;
+						FRAME_INITIALIZERS.add(initializer);
+					} catch ( Exception e ) {
+						FramesLogger.error(e, e.getMessage());
+					}
+				}
+			}
+		}	
+	}
+	
+	protected void onRegisterInitializers(Set<FrameInitializer> frameInitializers) {
+	}
+
 	public static boolean isEnableRegisterAnnotationHandlers() {
 		return Play.application().configuration().getBoolean("frames.enable.register.annotation.handlers", false);
 	}
-	
+	public static boolean isEnableRegisterFrameInitializers() {
+		return Play.application().configuration().getBoolean("frames.enable.register.frame.initializers", false);
+	}	
 }
