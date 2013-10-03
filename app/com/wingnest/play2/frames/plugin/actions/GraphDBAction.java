@@ -17,19 +17,19 @@ package com.wingnest.play2.frames.plugin.actions;
 
 import java.lang.annotation.Annotation;
 
+import play.libs.F.Promise;
 import play.mvc.Action;
 import play.mvc.Http;
-import play.mvc.Result;
+import play.mvc.SimpleResult;
 
-import com.tinkerpop.blueprints.TransactionalGraph.Conclusion;
 import com.wingnest.play2.frames.GraphDB;
 
 final public class GraphDBAction extends Action<Annotation> {
 
 	@Override
-	public Result call(final Http.Context context) throws Throwable {
+	public Promise<SimpleResult> call(final Http.Context context) throws Throwable {
 
-		final Result res;
+		final Promise<SimpleResult> res;
 		try {
 			beforeInvocation();
 			res = delegate.call(context);
@@ -44,7 +44,7 @@ final public class GraphDBAction extends Action<Annotation> {
 	}
 
 	private void beforeInvocation() {
-		GraphDB.getGraphManager().startTransaction();
+		/* nop */
 	}
 
 	private void invocationFinally() {
@@ -52,11 +52,11 @@ final public class GraphDBAction extends Action<Annotation> {
 	}
 
 	private void onInvocationSuccess() {
-		GraphDB.getGraphManager().stopTransaction(Conclusion.SUCCESS);
+		GraphDB.getGraphManager().commit();
 	}
 
 	private void onInvocationException(Exception e) {
-		GraphDB.getGraphManager().stopTransaction(Conclusion.FAILURE);
+		GraphDB.getGraphManager().rollback();
 	}
 
 }

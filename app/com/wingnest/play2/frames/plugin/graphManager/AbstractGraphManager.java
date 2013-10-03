@@ -15,18 +15,8 @@
  */
 package com.wingnest.play2.frames.plugin.graphManager;
 
-import com.tinkerpop.blueprints.TransactionalGraph.Conclusion;
-
 public abstract class AbstractGraphManager implements GraphManager {
 
-	@Override
-	public void startTransaction() {
-	}
-
-	@Override
-	public void stopTransaction(Conclusion conclusion) {
-	}	
-	
 	@Override
 	public void commit() {
 	}

@@ -16,17 +16,10 @@
 package com.wingnest.play2.frames.plugin.graphManager;
 
 import com.tinkerpop.blueprints.Graph;
-import com.tinkerpop.blueprints.TransactionalGraph.Conclusion;
 
 public interface GraphManager {
 
 	<T extends Graph> T getGraph();
-
-	@Deprecated	
-	void startTransaction();
-
-	@Deprecated
-	void stopTransaction(Conclusion conclusion);
 	
 	void commit();
 
