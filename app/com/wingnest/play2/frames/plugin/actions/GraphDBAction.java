@@ -17,19 +17,19 @@ package com.wingnest.play2.frames.plugin.actions;
 
 import java.lang.annotation.Annotation;
 
+import play.libs.F.Promise;
 import play.mvc.Action;
 import play.mvc.Http;
-import play.mvc.Result;
 
-import com.tinkerpop.blueprints.TransactionalGraph.Conclusion;
 import com.wingnest.play2.frames.GraphDB;
+import play.mvc.SimpleResult;
 
 final public class GraphDBAction extends Action<Annotation> {
 
 	@Override
-	public Result call(final Http.Context context) throws Throwable {
+	public Promise<SimpleResult>  call(final Http.Context context) throws Throwable {
 
-		final Result res;
+		final Promise<SimpleResult>  res;
 		try {
 			beforeInvocation();
 			res = delegate.call(context);
