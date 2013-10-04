@@ -15,7 +15,6 @@
  */
 package com.wingnest.play2.frames;
 
-import java.lang.annotation.Annotation;
 import java.util.Set;
 
 import com.tinkerpop.blueprints.Element;
@@ -24,24 +23,22 @@ import com.tinkerpop.blueprints.Index;
 import com.tinkerpop.blueprints.IndexableGraph;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Parameter;
-import com.tinkerpop.frames.FrameInitializer;
 import com.tinkerpop.frames.FramedGraph;
-import com.tinkerpop.frames.annotations.AnnotationHandler;
 import com.wingnest.play2.frames.plugin.FramesLogger;
-import com.wingnest.play2.frames.plugin.RawGraphDB;
+import com.wingnest.play2.frames.plugin.GraphDBConfiguration;
 import com.wingnest.play2.frames.plugin.graphManager.GraphManager;
 
 
 final public class GraphDB {
 	
-	private static RawGraphDB rawGraphDB; 
+	private static GraphDBConfiguration graphDBConfiguration; 
 
-	private static RawGraphDB getRawGraphDB() {
-		return rawGraphDB;
+	public static GraphDBConfiguration getGraphDBConfiguration() {
+		return graphDBConfiguration;
 	}
 	
-	public static void setRawGraphDB(final RawGraphDB graphDBRaw) {
-		GraphDB.rawGraphDB = graphDBRaw;
+	public static void setGraphDBConfiguration(final GraphDBConfiguration graphDBConfiguration) {
+		GraphDB.graphDBConfiguration = graphDBConfiguration;
 	}	
 	
 	public static void commit() {
@@ -57,31 +54,16 @@ final public class GraphDB {
 	}
 	
 	public static <T extends Graph> T getGraph() {
-		return (T)getRawGraphDB().getFramedGraphDirector().getGraphManager().getGraph();
+		return (T)getGraphDBConfiguration().getFramedGraphDirector().getGraphManager().getGraph();
 	}
 	
 	public static <T extends Graph> FramedGraph<T> createFramedGraph() {
-		final FramedGraph<T> framedGraph = (FramedGraph<T>)getRawGraphDB().getFramedGraphDirector().createFramedGraph();
-		registerAnnotations(framedGraph);
-		registerFrameInitializers(framedGraph);
-		return framedGraph;
+		return (FramedGraph<T>)getGraphDBConfiguration().getFramedGraphDirector().createFramedGraph();
 	}
 
 	public static GraphManager getGraphManager() {
-		return getRawGraphDB().getFramedGraphDirector().getGraphManager();
+		return getGraphDBConfiguration().getFramedGraphDirector().getGraphManager();
 	}
-
-	private static <T extends Graph> void registerAnnotations(final FramedGraph<T> framedGraph) {
-		for ( AnnotationHandler<? extends Annotation> handler : getRawGraphDB().getAnnotationHandlers() ) {
-			framedGraph.registerAnnotationHandler(handler);
-		}
-	}
-	
-	private static <T extends Graph> void registerFrameInitializers(final FramedGraph<T> framedGraph) {
-		for ( FrameInitializer initializer : getRawGraphDB().getFrameInitializers() ) {
-			framedGraph.registerFrameInitializer(initializer);
-		}
-	}	
 
 	public static <T extends Element> void dropKeyIndex(final String key, final Class<T> elementClass) {
 		final Graph graph = getGraph();

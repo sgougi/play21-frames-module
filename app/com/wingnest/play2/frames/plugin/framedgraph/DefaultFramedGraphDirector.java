@@ -17,10 +17,19 @@ package com.wingnest.play2.frames.plugin.framedgraph;
 
 import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.frames.FramedGraph;
+import com.tinkerpop.frames.FramedGraphConfiguration;
+import com.tinkerpop.frames.FramedGraphFactory;
+import com.tinkerpop.frames.annotations.gremlin.GremlinGroovyAnnotationHandler;
+import com.tinkerpop.frames.modules.AbstractModule;
+import com.tinkerpop.frames.modules.MethodHandler;
+import com.wingnest.play2.frames.GraphDB;
 import com.wingnest.play2.frames.plugin.graphManager.GraphManager;
+import com.tinkerpop.frames.FrameInitializer;
 
 public class DefaultFramedGraphDirector implements FramedGraphDirector<FramedGraph<Graph>> {
 
+	private GremlinGroovyAnnotationHandler gremlinGroovyHandler = new GremlinGroovyAnnotationHandler(); 
+	
 	private final GraphManager manager;
 
 	public DefaultFramedGraphDirector(final GraphManager manager) {
@@ -29,7 +38,17 @@ public class DefaultFramedGraphDirector implements FramedGraphDirector<FramedGra
 
 	@Override
 	public FramedGraph<Graph> createFramedGraph() {
-		return (FramedGraph<Graph>) new FramedGraph<Graph>(manager.getGraph());
+		return new FramedGraphFactory(new AbstractModule() {
+			public void doConfigure(FramedGraphConfiguration config) {
+				for ( MethodHandler<?> mh : GraphDB.getGraphDBConfiguration().getMethodHandlers() ) {
+					config.addMethodHandler(mh);
+				}
+				config.addMethodHandler(gremlinGroovyHandler);
+				for ( FrameInitializer fi: GraphDB.getGraphDBConfiguration().getFrameInitializers() ) {
+					config.addFrameInitializer(fi);
+				}
+			}
+		}).create(manager.getGraph());
 	}
 
 	@Override

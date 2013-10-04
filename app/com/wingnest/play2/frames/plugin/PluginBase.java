@@ -26,20 +26,19 @@ import play.Plugin;
 import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.frames.FrameInitializer;
 import com.tinkerpop.frames.FramedGraph;
+import com.tinkerpop.frames.modules.MethodHandler;
 
-import com.tinkerpop.frames.annotations.AnnotationHandler;
 import com.wingnest.play2.frames.GraphDB;
-import com.wingnest.play2.frames.plugin.annotation_handler.DatePropertyAnnotationHandler;
-import com.wingnest.play2.frames.plugin.annotation_handler.GremlinGroovyExAnnotationHandler;
-import com.wingnest.play2.frames.plugin.annotation_handler.IdAnnotationHandler;
-import com.wingnest.play2.frames.plugin.annotation_handler.IndexPropertyAnnotationHandler;
 import com.wingnest.play2.frames.plugin.framedgraph.FramedGraphDirector;
+import com.wingnest.play2.frames.plugin.method_handler.DatePropertyMethodHandler;
+import com.wingnest.play2.frames.plugin.method_handler.IdMethodHandler;
+import com.wingnest.play2.frames.plugin.method_handler.IndexPropertyMethodHandler;
 import com.wingnest.play2.frames.plugin.utils.TypeUtils;
 
 public abstract class PluginBase extends Plugin {
 	
 	final protected Application application;
-	final protected static Set<AnnotationHandler<? extends Annotation>> ANNOTATION_HANDLERS = new HashSet<AnnotationHandler<? extends Annotation>>();
+	final protected static Set<MethodHandler<? extends Annotation>> METHOD_HANDLERS = new HashSet<MethodHandler<? extends Annotation>>();
 	final protected static Set<FrameInitializer> FRAME_INITIALIZERS = new HashSet<FrameInitializer>();
 
 	protected static FramedGraphDirector<? extends FramedGraph<? extends Graph>> FRAMED_GRAPH_DIRECTOR;
@@ -71,14 +70,14 @@ public abstract class PluginBase extends Plugin {
 		
 		registerAnnotations();
 		registerInitializers();		
-		GraphDB.setRawGraphDB(new RawGraphDB(){
+		GraphDB.setGraphDBConfiguration(new GraphDBConfiguration(){
 			@Override
 			public <T extends FramedGraph<? extends Graph>> FramedGraphDirector<T> getFramedGraphDirector() {
 				return (FramedGraphDirector<T>)PluginBase.FRAMED_GRAPH_DIRECTOR;
 			}
 			@Override
-			public Set<AnnotationHandler<? extends Annotation>> getAnnotationHandlers() {
-				return (Set<AnnotationHandler<? extends Annotation>>)ANNOTATION_HANDLERS;
+			public Set<MethodHandler<? extends Annotation>> getMethodHandlers() {
+				return (Set<MethodHandler<? extends Annotation>>)METHOD_HANDLERS;
 			}
 			@Override
 			public Set<FrameInitializer> getFrameInitializers() {
@@ -96,7 +95,7 @@ public abstract class PluginBase extends Plugin {
 	
 	protected abstract <T extends FramedGraph<? extends Graph>> FramedGraphDirector<T> createFramedGraphDirector();
 
-	protected void onRegisterAnnotations(final Set<AnnotationHandler<? extends Annotation>> annotationHandlers) {
+	protected void onRegisterAnnotations(final Set<MethodHandler<? extends Annotation>> annotationHandlers) {
 	}
 	
 	protected void onBeginStart() {
@@ -106,31 +105,32 @@ public abstract class PluginBase extends Plugin {
 	}	
 	
 	protected void registerAnnotations() {
-		ANNOTATION_HANDLERS.clear();
-		onRegisterAnnotations(ANNOTATION_HANDLERS);
+		METHOD_HANDLERS.clear();
+		onRegisterAnnotations(METHOD_HANDLERS);
 		if(isEnableRegisterAnnotationHandlers()) {
 			@SuppressWarnings("rawtypes")			
-			final Set<Class<AnnotationHandler>> handlerClasses = TypeUtils.getSubTypesOf(application, "handlers", AnnotationHandler.class);
+			final Set<Class<MethodHandler>> handlerClasses = TypeUtils.getSubTypesOf(application, "handlers", MethodHandler.class);
 			for ( @SuppressWarnings("rawtypes")
-			final Class<AnnotationHandler> javaClass : handlerClasses ) {
-				if ( AnnotationHandler.class.isAssignableFrom(javaClass) ) {
+			final Class<MethodHandler> javaClass : handlerClasses ) {
+				if ( MethodHandler.class.isAssignableFrom(javaClass) ) {
 					FramesLogger.info("register AnnotationHandler: %s", javaClass.getName());
-					final AnnotationHandler<? extends Annotation> handler;
+					final MethodHandler<? extends Annotation> handler;
 					try {
 						@SuppressWarnings("unchecked")
-						final AnnotationHandler<? extends Annotation> whandler = (AnnotationHandler<? extends Annotation>) javaClass.newInstance();
+						final MethodHandler<? extends Annotation> whandler = (MethodHandler<? extends Annotation>) javaClass.newInstance();
 						handler = whandler;
-						ANNOTATION_HANDLERS.add(handler);
+						METHOD_HANDLERS.add(handler);
 					} catch ( Exception e ) {
 						FramesLogger.error(e, e.getMessage());
 					}
 				}
 			}
 		}
-		ANNOTATION_HANDLERS.add(new IdAnnotationHandler());
-		ANNOTATION_HANDLERS.add(new IndexPropertyAnnotationHandler());
-		ANNOTATION_HANDLERS.add(new GremlinGroovyExAnnotationHandler());
-		ANNOTATION_HANDLERS.add(new DatePropertyAnnotationHandler());
+		
+		METHOD_HANDLERS.add(new IdMethodHandler());
+		METHOD_HANDLERS.add(new IndexPropertyMethodHandler());
+		METHOD_HANDLERS.add(new DatePropertyMethodHandler());
+		
 	}
 	
 	protected void registerInitializers() {
