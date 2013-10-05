@@ -71,7 +71,9 @@ public abstract class PluginBase extends Plugin {
 		}
 		
 		registerAnnotations();
-		registerInitializers();		
+		registerInitializers();
+		registerTypeResolvers();
+
 		GraphDB.setGraphDBConfiguration(new GraphDBConfiguration(){
 			@Override
 			public <T extends FramedGraph<? extends Graph>> FramedGraphDirector<T> getFramedGraphDirector() {
@@ -135,7 +137,6 @@ public abstract class PluginBase extends Plugin {
 		METHOD_HANDLERS.add(new IdMethodHandler());
 		METHOD_HANDLERS.add(new IndexPropertyMethodHandler());
 		METHOD_HANDLERS.add(new DatePropertyMethodHandler());
-		
 	}
 	
 	protected void registerInitializers() {
