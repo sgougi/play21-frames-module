@@ -27,6 +27,7 @@ import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.frames.FrameInitializer;
 import com.tinkerpop.frames.FramedGraph;
 import com.tinkerpop.frames.modules.MethodHandler;
+import com.tinkerpop.frames.modules.TypeResolver;
 
 import com.wingnest.play2.frames.GraphDB;
 import com.wingnest.play2.frames.plugin.framedgraph.FramedGraphDirector;
@@ -40,6 +41,7 @@ public abstract class PluginBase extends Plugin {
 	final protected Application application;
 	final protected static Set<MethodHandler<? extends Annotation>> METHOD_HANDLERS = new HashSet<MethodHandler<? extends Annotation>>();
 	final protected static Set<FrameInitializer> FRAME_INITIALIZERS = new HashSet<FrameInitializer>();
+	final protected static Set<TypeResolver> TYPE_RESOLVERS = new HashSet<TypeResolver>();
 
 	protected static FramedGraphDirector<? extends FramedGraph<? extends Graph>> FRAMED_GRAPH_DIRECTOR;
 	
@@ -97,10 +99,13 @@ public abstract class PluginBase extends Plugin {
 
 	protected void onRegisterAnnotations(final Set<MethodHandler<? extends Annotation>> annotationHandlers) {
 	}
-	
+	protected void onRegisterInitializers(Set<FrameInitializer> frameInitializers) {
+	}	
+	protected void onRegisterTypeResolvers(Set<TypeResolver> typeResolvers) {
+	}	
+		
 	protected void onBeginStart() {
-	}
-	
+	}	
 	protected void onEndStart() {
 	}	
 	
@@ -109,7 +114,7 @@ public abstract class PluginBase extends Plugin {
 		onRegisterAnnotations(METHOD_HANDLERS);
 		if(isEnableRegisterAnnotationHandlers()) {
 			@SuppressWarnings("rawtypes")			
-			final Set<Class<MethodHandler>> handlerClasses = TypeUtils.getSubTypesOf(application, "handlers", MethodHandler.class);
+			final Set<Class<MethodHandler>> handlerClasses = TypeUtils.getSubTypesOf(application, getAnnotationHandlersPackageName(), MethodHandler.class);
 			for ( @SuppressWarnings("rawtypes")
 			final Class<MethodHandler> javaClass : handlerClasses ) {
 				if ( MethodHandler.class.isAssignableFrom(javaClass) ) {
@@ -138,7 +143,7 @@ public abstract class PluginBase extends Plugin {
 		onRegisterInitializers(FRAME_INITIALIZERS);
 		if(isEnableRegisterFrameInitializers()) {
 			@SuppressWarnings("rawtypes")			
-			final Set<Class<FrameInitializer>> initializerClasses = TypeUtils.getSubTypesOf(application, "initializers", FrameInitializer.class);
+			final Set<Class<FrameInitializer>> initializerClasses = TypeUtils.getSubTypesOf(application, getFrameInitializersPackageName(), FrameInitializer.class);
 			for ( @SuppressWarnings("rawtypes")
 			final Class<FrameInitializer> javaClass : initializerClasses ) {
 				if ( FrameInitializer.class.isAssignableFrom(javaClass) ) {
@@ -157,13 +162,48 @@ public abstract class PluginBase extends Plugin {
 		}	
 	}
 	
-	protected void onRegisterInitializers(Set<FrameInitializer> frameInitializers) {
-	}
+	protected void registerTypeResolvers() {
+		TYPE_RESOLVERS.clear();
+		onRegisterTypeResolvers(TYPE_RESOLVERS);
+		if(isEnableRegisterTypeResolvers()) {
+			@SuppressWarnings("rawtypes")			
+			final Set<Class<TypeResolver>> resolverClasses = TypeUtils.getSubTypesOf(application, getTypeResolversPackageName(), TypeResolver.class);
+			for ( @SuppressWarnings("rawtypes")
+			final Class<TypeResolver> javaClass : resolverClasses ) {
+				if ( TypeResolver.class.isAssignableFrom(javaClass) ) {
+					FramesLogger.info("register TypeResolver: %s", javaClass.getName());
+					final TypeResolver resolver;
+					try {
+						@SuppressWarnings("unchecked")
+						final TypeResolver wresolver = (TypeResolver) javaClass.newInstance();
+						resolver = wresolver;
+						TYPE_RESOLVERS.add(resolver);
+					} catch ( Exception e ) {
+						FramesLogger.error(e, e.getMessage());
+					}
+				}
+			}
+		}	
+	}	
 
+	public static String getAnnotationHandlersPackageName() {
+		return Play.application().configuration().getString("frames.register.annotation_handlers.package_anme", "annotation_handlers");
+	}
+	public static String getFrameInitializersPackageName() {
+		return Play.application().configuration().getString("frames.register.frame_initializers.package_name", "frame_initializers");
+	}	
+	public static String getTypeResolversPackageName() {
+		return Play.application().configuration().getString("frames.register.type_resolvers.package_name", "type_resolvers");
+	}
+	
 	public static boolean isEnableRegisterAnnotationHandlers() {
-		return Play.application().configuration().getBoolean("frames.enable.register.annotation.handlers", false);
+		return Play.application().configuration().getBoolean("frames.register.annotation_handlers.enable", false);
 	}
 	public static boolean isEnableRegisterFrameInitializers() {
-		return Play.application().configuration().getBoolean("frames.enable.register.frame.initializers", false);
+		return Play.application().configuration().getBoolean("frames.register.frame_initializers.enable", false);
 	}	
+	public static boolean isEnableRegisterTypeResolvers() {
+		return Play.application().configuration().getBoolean("frames.register.type_resolvers.enable", false);
+	}	
+	
 }
