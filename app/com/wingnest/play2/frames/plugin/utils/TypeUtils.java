@@ -51,6 +51,20 @@ final public class TypeUtils {
 		return classes;
 	}
 	
+	public static Set<Class<?>> getTypesAnnotatedWith(Application application, String packageName, Class<? extends java.lang.annotation.Annotation> annotation) {
+		final Set<Class<?>> classes = new HashSet<Class<?>>();
+		try {
+			final Set<String> classNames = new HashSet<String>();
+			classNames.addAll(play.libs.Classpath.getTypesAnnotatedWith(application, packageName, annotation));
+			for ( final String clazzName : classNames ) {
+				final Class<?> c = Class.forName(clazzName, true, application.classloader());
+				classes.add((Class<?>) c);
+			}
+		} catch ( Exception e ) {
+			throw new FramesUnexpectedException(e);
+		}
+		return classes;	
+	}
 	
 	private TypeUtils() {
 	}
