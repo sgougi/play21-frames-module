@@ -19,8 +19,8 @@ Requirements
 Dependencies
 =========
 
-* TinkerPop Blueprints 2.4.0
-* TinkerPop Frames 2.4.0
+* TinkerPop Blueprints 2.5.0-SNAPSHOT
+* TinkerPop Frames 2.5.0-SNAPSHOT
  
 Known Issues
 =============

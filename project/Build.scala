@@ -6,8 +6,8 @@ import play.Project._
 object ApplicationBuild extends Build {
 
 	val appName         = "play21-frames-module"
-	val appVersion      = "2.4.4"
-	val tinkerpopVersion = "2.4.0"  
+	val appVersion      = "2.5.0-SNAPSHOT"
+	val tinkerpopVersion = "2.5.0-SNAPSHOT"  
 
 	val appDependencies = Seq(
 //	    "com.tinkerpop.blueprints" % "blueprints-core" % {tinkerpopVersion},
